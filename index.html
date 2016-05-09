@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Gather LoL Data</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/cerulean/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<link rel="stylesheet" href="style.css">
+	</head>
+
+	<body>
+		<!-- Title -->
+		<h1 class="text-center">Gather LoL Data</h1>
+				
+		<div id="container">
+			<!-- Form -->
+			<form class="form-horizontal col-sm-5" id="form">
+				<h2 class="text-center">Form</h2>
+				<div class="form-group">
+					<label for="limitByTier" class="col-sm-4 control-label">Limit by tier : </label>
+				    <div class="col-sm-8"><input type="text" class="form-control" id="limitByTier" placeholder="10 000"></div>
+				    
+					<label for="tiersAllowed" class="col-sm-4 control-label">Tiers allowed : </label>
+				    <div class="col-sm-8">
+					    <select multiple size="7" class="form-control form-control" id="tiersAllowed">
+					  		<option>Bronze</option>
+						 	<option>Silver</option>
+						 	<option>Gold</option>
+						  	<option>Platinum</option>
+						  	<option>Diamond</option>
+						  	<option>Master</option>
+						  	<option>Challenger</option>
+						</select>
+				    </div>
+
+					<label for="dataToGather" class="col-sm-4 control-label">Data to gather : </label>
+					<div class="col-sm-8">
+					    <select multiple class="form-control form-control" id="dataToGather">
+					  		<option>Mastery</option>
+						</select>
+				    </div>
+				    
+					<label for="nameChampionToStart" class="col-sm-4 control-label">Name champion to start : </label>
+				    <div class="col-sm-6"><input type="text" class="form-control col-sm-10" id="nameChampionToStart"></div>
+					<div class="col-sm-2">
+					    <select class="form-control form-control" id="region">
+					  		<option>BR</option>
+						 	<option>EUNE</option>
+						 	<option selected>EUW</option>
+						  	<option>JP</option>
+						  	<option>KR</option>
+						  	<option>LAN</option>
+						  	<option>LAS</option>
+						  	<option>NA</option>
+						  	<option>OCE</option>
+						  	<option>RU</option>
+						  	<option>TR</option>
+						</select>
+				    </div>
+				    
+					<label for="keyAPI" class="col-sm-4 control-label">Key API : </label>
+				    <div class="col-sm-8"><input type="text" class="form-control col-sm-10" id="keyAPI"></div>
+				    
+					<label for="keyRequestLimitTenMinutes" class="col-sm-4 control-label">Key request limit - Ten minutes : </label>
+				    <div class="col-sm-8"><input type="text" class="form-control col-sm-10" id="keyRequestLimitTenMinutes"></div>
+				    
+					<label for="keyRequestLimitTenSeconds" class="col-sm-4 control-label">Key request limit - Ten seconds : </label>
+				    <div class="col-sm-8"><input type="text" class="form-control col-sm-10" id="keyRequestLimitTenSeconds"></div>
+
+				    <div class="col-md-5 col-md-offset-1"><button onclick="sendForm()" type="button" id="sendFormButton" class="btn btn-success btn btn-success btn-block">Submit</button></div>
+				    <div class="col-md-5 col-md-offset-1"><button onclick="getJsonFile()" type="button" id="getJsonFileButton" class="btn btn-success btn btn-info btn-block disabled">Get Json File</button></div>
+				</div>
+			</form>
+
+			<!-- Logs -->
+			<div id="container_logs" class="col-sm-5 col-md-offset-1">
+				<h2 class="text-center">Logs</h2>
+				<div id="logs1"></div><!-- Progress information -->
+				<hr>
+				<div id="logs2"></div><!-- Request number -->
+				<hr>
+				<div id="logs3"></div><!-- Players gathered -->
+			</div>
+		</div>
+
+		<script>
+
+			// Set the logs conteiner heigth
+			$("#container_logs").height($("#form").height()); 			
+
+			// Connect to socket.io
+        	socket = io.connect('http://localhost:3001');
+
+        	var data = {};
+			function sendForm(){
+
+				// Change the submit text
+				$("#sendFormButton").val(($("#sendFormButton").val() == "Submit" ? "Stop" : "Submit"));
+
+				// Enable the getJsonFile button
+				$("#getJsonFileButton").removeAttribute("disabled"); 
+
+				// Form
+				data = {
+					"limitByTier" : $("#limitByTier").val(),
+					"tiersAllowed" : $("#tiersAllowed").val(),
+					"dataToGather" : $("#dataToGather").val(),
+					"nameChampionToStart" : $("#nameChampionToStart").val(),
+					"region" : $("#region").val(),
+					"keyAPI" : $("#keyAPI").val(),
+					"keyRequestLimitTenMinutes" : $("#keyRequestLimitTenMinutes").val(),
+					"keyRequestLimitTenSeconds" : $("#keyRequestLimitTenSeconds").val()
+				};
+
+				console.log(data);
+            	socket.emit('form', data);
+			}
+
+			function getJsonFile(){
+
+				/** Temp **/
+				socket.emit('getJsonFile', data);
+				/** Temp **/
+
+				if(Object.getOwnPropertyNames(data).length) {
+	            	socket.emit('getJsonFile', data);
+	            }
+			}
+
+        	// Quand on reçoit un message, on l'insère dans la page
+        	socket.on('log', function(data) {
+            	$("#logs1").append("<div><div class='col-sm-3'><b>[" + new Date().getHours()+"h "+new Date().getMinutes()+"min "+ new Date().getSeconds() +"s "+ new Date().getMilliseconds() + "m ]</b></div><div class='col-sm-9'>" + data + "</div></div>");
+            	var objDiv = document.getElementById("logs1");
+				objDiv.scrollTop = objDiv.scrollHeight;
+        	});
+
+        	socket.on('logRequest', function(data) {
+    			$("#logs2").html("");
+        		for(var prop in data) {
+            		$("#logs2").append("<div><div class='col-sm-3'><b>[" + prop + "]</b></div><div class='col-sm-9'>" + data[prop] + "</div></div>");
+        		}
+        	});
+
+        	socket.on('logPlayerGathered', function(data) {
+    			$("#logs3").html("");
+        		for(var prop in data) {
+            		$("#logs3").append("<div><div class='col-sm-5'><b>[" + prop + "]</b></div><div class='col-sm-7'>" + data[prop] + "</div></div>");
+        		}
+        	});
+
+        	socket.on('action', function(data) {
+        		if(data == "clean logs") {
+        			$("#logs1").html("");
+        		}
+        		else if(data == "switchSubmitTextButton") {
+        			$("#sendFormButton").val("Submit");
+        		}        		
+        	});
+		</script>
+	</body>
+</html>

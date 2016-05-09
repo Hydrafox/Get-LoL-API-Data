@@ -1,0 +1,25 @@
+h1, h2 {
+	margin-bottom: 50px;
+}
+
+
+input, select {
+	margin-bottom: 25px;
+}
+
+#container {
+	/*display: flex;*/
+}
+
+	#logs1 {
+		height: 40%;
+		overflow: auto;
+	}
+
+	#logs2 {
+		height: 20%;
+	}
+
+	#logs2 {
+		height: 20%;
+	}

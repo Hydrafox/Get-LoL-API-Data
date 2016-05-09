@@ -1,0 +1,12 @@
+{
+    "name": "Gather-LoL-Data",
+    "version": "0.1.0",
+    "dependencies": {
+        "express": "~3.3.8",
+        "request": "~2.72.0",
+        "deasync": "~0.1.6",
+        "socket.io": "~1.2.1"
+    },
+    "author": "Hydrafox [EUW]",
+    "description": "This application is used to gather the data you need from LoL API."
+}
