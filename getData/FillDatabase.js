@@ -86,40 +86,26 @@ module.exports = function() {
 			socket.emit('log', "Start");
 
 
-			/** Not verified during development
-			if(this.checkParameters(form) == true){*/
+			if(this.checkParameters(form) == true){
 
 
-			// Only during development
-			this.form = {
-				"limitByTier" : 10000,
-				"tiersAllowed" : ["Bronze", "Silver", "Gold", "Platinum", "Diamond"],
-				"dataToGather" : ["Mastery"],
-				"nameChampionToStart" : "EC LE ROI BISOU",
-				"region" : "EUW",
-				"keyAPI" : "d5d87927-a51b-4cb8-811d-eb7e345f2fa0",
-				"keyRequestLimitByTenMinutes" : 90000,
-				"keyRequestLimitByTenSeconds" : 1500
-			}
 
 			this.parameter.setParameters(this.form);
 			this.championsDataManager.listChampions.initListChampions();
 
-// Nixart
-// pf2012
+
 			// Set API values
 			this.championsDataManager.setAPIValues(this.parameter.keyAPI, this.parameter.keyRequestLimitByTenMinutes, this.parameter.keyRequestLimitByTenSeconds);
 
 			// Get data of the champion - will return to switchCursor
 			this.championsDataManager.getIdChampion();
 
-			/** Not verified during development
 			}
 			else {
 				
 				return false;
 			}
-			*/
+			
 		}
 
 		this.checkParameters = function(form) {

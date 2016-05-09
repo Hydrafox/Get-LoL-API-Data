@@ -11,7 +11,6 @@ var app = require("express")(),
 	port = (process.env.VCAP_APP_PORT || 3001); 
 	host = (process.env.VCAP_APP_HOST || "localhost"); 
 
-//import {FillDatabase} from "./getData/FillDatabase.js";
 
 
 // Define public folder
@@ -27,18 +26,10 @@ io.sockets.on('connection', function (socket, pseudo) {
 	require("./getData/FillDatabase.js")();
 	var fillDatabase = new FillDatabase(socket);
 
-		/** Temp **/
-		socket.emit('action', "clean logs"); // Clean the logs
-		fillDatabase.start("");
-		/** Temp **/
-
-
 	socket.on('form', function(form) {
 
 		socket.emit('action', "clean logs"); // Clean the logs
 		console.log(form);
-		//require("./getData/FillDatabase.js")();
-		//var fillDatabase = new FillDatabase(socket);
 		fillDatabase.start(form);
 	});
 

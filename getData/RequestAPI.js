@@ -33,8 +33,6 @@ module.exports = function() {
 				  	}
 				});
 			}
-			championsDataManager.fillDatabase.switchCursor();
-			championsDataManager.fillDatabase.switchCursor();
 		}
 
 		this.getTierChampion = function(id, region, championsDataManager) {
